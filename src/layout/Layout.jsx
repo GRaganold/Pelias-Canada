@@ -1,7 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
-
+import { Outlet } from "react-router-dom";
 import {
   GcdsHeader,
   GcdsFooter,
@@ -9,9 +6,17 @@ import {
   GcdsTopNav,
   GcdsNavGroup,
   GcdsNavLink,
-} from '@cdssnc/gcds-components-react';
-import '@cdssnc/gcds-components-react/gcds.css'; // Import the CSS file if necessary
-import './Layout.css';
+} from "@cdssnc/gcds-components-react";
+import "@cdssnc/gcds-components-react/gcds.css";
+import "./Layout.css";
+
+const baseURL = "/Pelias-Canada/";
+const links = {
+  home: baseURL,
+  bulkInputs: `${baseURL}bulkinputs`,
+  pythonApi: `${baseURL}pythonapi`,
+  rshinyApi: `${baseURL}rshinyapi`,
+};
 
 function Layout() {
   return (
@@ -20,38 +25,36 @@ function Layout() {
         <div slot="skip-to-nav">
           <a href="#main-content" className="skip-to-content-link">
             Skip to main content
-          </a>{' '}
+          </a>
         </div>
         <nav slot="menu">
           <GcdsTopNav label="Top navigation" alignment="right">
-            <GcdsNavLink href="Pelias-Canada/" slot="home">
+            <GcdsNavLink href={links.home} slot="home">
               Pelias Geocoder
             </GcdsNavLink>
-            <GcdsNavLink href="/">Home</GcdsNavLink>
-            <GcdsNavLink href="/">Bulk Inputs</GcdsNavLink>
+            <GcdsNavLink href={links.home}>Home</GcdsNavLink>
+            <GcdsNavLink href={links.bulkInputs}>Bulk Inputs</GcdsNavLink>
             <GcdsNavGroup openTrigger="Features" menuLabel="Features">
               <GcdsNavLink href="#" current>
                 Developers
               </GcdsNavLink>
-              <GcdsNavLink href="/python-api">Python Api</GcdsNavLink>
-              <GcdsNavLink href="/rshiny-api">RShiny Api</GcdsNavLink>
+              <GcdsNavLink href={links.pythonApi}>Python Api</GcdsNavLink>
+              <GcdsNavLink href={links.rshinyApi}>RShiny Api</GcdsNavLink>
             </GcdsNavGroup>
           </GcdsTopNav>
         </nav>
       </GcdsHeader>
-
       <GcdsContainer
         size="xl"
         centered
         color="black"
         style={{
-          flexGrow: '1',
+          flexGrow: "1",
         }}
         id="main-content"
       >
         <Outlet />
       </GcdsContainer>
-
       <GcdsFooter contextualHeading="Contextual navigation"></GcdsFooter>
     </>
   );

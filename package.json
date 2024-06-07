@@ -2,12 +2,12 @@
   "homepage": "https://graganold.github.io/Pelias-Canada/",
   "name": "ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "dev": "vite",
+    "dev": "vite --port 3000 --host",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"

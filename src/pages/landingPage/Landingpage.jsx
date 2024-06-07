@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
-import TestAPIfetch from "../../assets/testApiFetch";
-// import APIfetch from "../../components/apiFetch/APIFetch";
+// import TestAPIfetch from "../../assets/testApiFetch";
+import APIfetch from "../../components/apiFetch/APIFetch";
 
 export default function LandingPage() {
   return (
@@ -21,9 +21,11 @@ export default function LandingPage() {
           external.
         </p>
       </div>
-      {/* <APIfetch />
-       */}
-       <TestAPIfetch />
+      <APIfetch /> 
+
+
+
+       {/* <TestAPIfetch /> */}
     </>
   );
 }
