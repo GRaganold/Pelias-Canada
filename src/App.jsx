@@ -4,7 +4,7 @@ import AppRoutes from './Routes';
 
 function App() {
   return (
-    <Router basename="/Pelias-Canada/">
+    <Router >
       <AppRoutes />
     </Router>
   );

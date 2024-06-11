@@ -8,14 +8,15 @@ import BulkInput from './pages/bulkInput/BulkInput';
 function AppRoutes() {
   return (
     <Routes> 
-      <Route path="/" element={<Layout />}>
+      <Route path="/Pelias-Canada/" element={<Layout />}>
         <Route index element={<LandingPage />} />
-        <Route path="/pythonapi" element={<PythonAPIPage />} />
-        <Route path="/rshinyapi" element={<RShinyAPIPage />} />
-        <Route path="/bulkinputs" element={<BulkInput />} />
+        <Route path="/Pelias-Canada/pythonapi" element={<PythonAPIPage />} />
+        <Route path="/Pelias-Canada/rshinyapi" element={<RShinyAPIPage />} />
+        <Route path="/Pelias-Canada/bulkinputs" element={<BulkInput />} />
       </Route>
     </Routes>
   );
 }
 
 export default AppRoutes;
+
