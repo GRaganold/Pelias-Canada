@@ -18,7 +18,6 @@ const links = {
   rshinyApi: `${baseURL}rshinyapi`,
 };
 
-
 function Layout() {
   return (
     <>
@@ -33,14 +32,13 @@ function Layout() {
             <GcdsNavLink href={links.home} slot="home">
               Pelias Geocoder
             </GcdsNavLink>
-            <GcdsNavLink href="/Pelias-Canada/">Home</GcdsNavLink>
-            <GcdsNavLink href="/Pelias-Canada/bulkinputs">Bulk Inputs</GcdsNavLink>
+            <GcdsNavLink href={links.home}>Home</GcdsNavLink>            
+            <GcdsNavLink href={links.bulkInputs}>Bulk Inputs</GcdsNavLink>            
             <GcdsNavGroup openTrigger="Features" menuLabel="Features">
               <GcdsNavLink href="#" current>
                 Developers
               </GcdsNavLink>
-              {/* <GcdsNavLink href={"/Pelias-Canada/"}>Python Api</GcdsNavLink> */}
-              <GcdsNavLink href="/Pelias-Canada/rshinyapi">RShiny Api</GcdsNavLink>
+              <GcdsNavLink href={links.rshinyApi}>RShiny Api</GcdsNavLink>
             </GcdsNavGroup>
           </GcdsTopNav>
         </nav>

@@ -1,4 +1,4 @@
-import GeocodeAddresses from "./GeocodeAddresses";
+import GeocodeAddresses from "../../components/apiFetch/GeocodeAddresses";
 
 
 export default function BulkInput() {

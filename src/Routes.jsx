@@ -10,9 +10,9 @@ function AppRoutes() {
     <Routes> 
       <Route path="/Pelias-Canada/" element={<Layout />}>
         <Route index element={<LandingPage />} />
-        <Route path="/Pelias-Canada/pythonapi" element={<PythonAPIPage />} />
-        <Route path="/Pelias-Canada/rshinyapi" element={<RShinyAPIPage />} />
-        <Route path="/Pelias-Canada/bulkinputs" element={<BulkInput />} />
+        <Route path="pythonapi" element={<PythonAPIPage />} />
+        <Route path="rshinyapi" element={<RShinyAPIPage />} />
+        <Route path="bulkinputs" element={<BulkInput />} />
       </Route>
     </Routes>
   );

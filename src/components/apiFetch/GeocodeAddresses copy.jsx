@@ -126,11 +126,11 @@ const GeocodeAddresses = () => {
         <div>
           <h2>Results</h2>
           <ul>
-            {results.map((result, index) => (
+            {results.map((responseData, index) => (
               <li key={index}>
-                <strong>Address:</strong> {result.address}
+                <strong>Address:</strong> {responseData.address}
                 <br />
-                <strong>Result:</strong> {JSON.stringify(result.data)}
+                <strong>Result:</strong> {JSON.stringify(responseData.data)}
               </li>
             ))}
           </ul>
