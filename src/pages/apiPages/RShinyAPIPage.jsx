@@ -1,11 +1,11 @@
 import { GcdsHeading } from "@cdssnc/gcds-components-react"
 import "@cdssnc/gcds-components-react/gcds.css" // Import the CSS file if necessary
-import { Breadcrumb } from "../../components/Breadcrum"
+
 
 export default function RShinyAPIPage() {
 	return (
 		<>
-        <Breadcrumb page="rshinyapi" pageName="R Shiny API"/>
+
 			<GcdsHeading tag="h2" marginTop="50">R Shiny API</GcdsHeading>
 			<div style={{ textAlign: "justify" }}>
 				<p>

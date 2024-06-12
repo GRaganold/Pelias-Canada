@@ -10,3 +10,38 @@
 .skip-to-content-link:focus {
   transform: translateY(0%);
 }
+
+.nav-link {
+  color: #303030;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+.nav-link:hover {
+  color: blue;
+  text-decoration: underline;
+}
+
+
+.breadcrumb {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: '>';
+  padding: 0 0.5rem;
+}
+
+.breadcrumb-item a {
+  color: black;
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: blue;
+  text-decoration: underline;
+  font-weight: bold;
+}

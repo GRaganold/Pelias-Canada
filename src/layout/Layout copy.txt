@@ -3,7 +3,7 @@ import { GcdsHeader, GcdsFooter, GcdsContainer, GcdsTopNav, GcdsNavGroup, GcdsNa
 import "@cdssnc/gcds-components-react/gcds.css"
 
 import "./Layout.css"
-import Breadcrumb from "../components/Breadcrum"
+// import Breadcrumb from "../components/Breadcrum"
 
 function Layout() {
 	return (
@@ -17,34 +17,31 @@ function Layout() {
 				<nav slot="menu">
 					<GcdsTopNav label="Top navigation" alignment="right">
 						<GcdsNavLink slot="home">
-							<Link to="home" className="nav-link" style={{ fontWeight: "bold" }}>
-								Pelias Geocoder
-							</Link>
+							<Link to="home" className="nav-link" style={{fontWeight:"bold", }}>Pelias Geocoder</Link>
 						</GcdsNavLink>
 						<GcdsNavLink>
-							<Link to="home" className="nav-link">
-								Home
-							</Link>
+							<Link to="home" className="nav-link">Home</Link>
 						</GcdsNavLink>
 						<GcdsNavLink>
-							<Link to="bulkinput" className="nav-link">
-								Bulk Input
-							</Link>
+					
+							<Link to="bulkinput"
+							className="nav-link"
+							>Bulk Input</Link>
 						</GcdsNavLink>
 						<GcdsNavGroup openTrigger="Features" menuLabel="Features">
 							<GcdsNavLink href="#" current>
 								Developers
 							</GcdsNavLink>
-							<GcdsNavLink>
-								<Link to="rshinyapi" className="nav-link">
-									RShiny Api
-								</Link>
-							</GcdsNavLink>
+							<GcdsNavLink >
+							<Link to="rshinyapi"
+							className="nav-link"
+							>RShiny Api</Link>
+								</GcdsNavLink>
 						</GcdsNavGroup>
 					</GcdsTopNav>
 				</nav>
 			</GcdsHeader>
-
+			<Breadcrumb />
 			<GcdsContainer
 				size="xl"
 				centered
@@ -54,7 +51,6 @@ function Layout() {
 				}}
 				id="main-content"
 			>
-				<Breadcrumb />
 				<Outlet />
 			</GcdsContainer>
 

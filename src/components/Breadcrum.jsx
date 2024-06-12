@@ -1,21 +1,27 @@
 
-import PropTypes from 'prop-types';
-import { GcdsBreadcrumbs, GcdsBreadcrumbsItem } from "@cdssnc/gcds-components-react";
-import "@cdssnc/gcds-components-react/gcds.css"; // Import the CSS file if necessary
+import { Link, useLocation } from 'react-router-dom';
 
-export function Breadcrumb({ page, pageName }) {
-    return (
-        <div style = {{padding: 0, margin:0 }}>
+const Breadcrumb = () => {
+  const location = useLocation();
+  const pathnames = location.pathname.split('/').filter((x) => x);
 
-        <GcdsBreadcrumbs hideCanadaLink fontSize="12px">
-            <GcdsBreadcrumbsItem href="/">Home</GcdsBreadcrumbsItem>
-            <GcdsBreadcrumbsItem href={page} >{pageName}</GcdsBreadcrumbsItem>
-        </GcdsBreadcrumbs>
-        </div>
-    );
-}
-
-Breadcrumb.propTypes = {
-    page: PropTypes.string.isRequired,
-    pageName: PropTypes.string.isRequired
+  return (
+    <nav aria-label="breadcrumb">
+      <ol className="breadcrumb">
+        <li className="breadcrumb-item">
+          <Link to="/">Home</Link>
+        </li>
+        {pathnames.map((value, index) => {
+          const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+          return (
+            <li key={to} className="breadcrumb-item">
+              <Link to={to}>{value}</Link>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
 };
+
+export default Breadcrumb;
