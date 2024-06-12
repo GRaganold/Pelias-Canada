@@ -115,17 +115,20 @@ export default function APIfetch() {
             justifyContent: "space-around",
           }}
         >
-          <GcdsButton type="submit" buttonId="submit">
+          <GcdsButton type="submit" buttonId="submit" size="regular">
             Search
           </GcdsButton>
           <GcdsButton
+          size="regular"
+          type="reset" 
+          buttonRole="secondary"
             buttonId="reset"
             onClick={() => {
               setAddress("");
               setCity("");
               setProvince("");
               setLastResponse("");
-              setResponseData(null);
+              setResponseData("");
             }}
           >
             Reset

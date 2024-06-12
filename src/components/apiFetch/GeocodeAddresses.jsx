@@ -38,19 +38,29 @@ const GeocodeAddresses = () => {
 			addresses.map(async address => {
 				const fullAddress = address.Address // Assuming the address column is named 'Address'
 				console.log("Sending address to API:", fullAddress)
-				const response = await fetch(`https://geocoder.alpha.phac.gc.ca/api/search?text=${encodeURIComponent(fullAddress)}`)
-				const data = await response.json()
-				console.log("Received response for address:", fullAddress, data)
+				try {
+					const response = await fetch(`https://geocoder.alpha.phac.gc.ca/api/search?text=${encodeURIComponent(fullAddress)}`)
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`)
+					}
+					const data = await response.json()
+					console.log("Received response for address:", fullAddress, data)
 
-				// Update progress
-				completedAddresses++
-				setProgress((completedAddresses / totalAddresses) * 100)
-
-				return { address: fullAddress, data } // Store both address and its result
+					return { address: fullAddress, data } // Store both address and its result
+				} catch (error) {
+					console.error("Error:", error)
+					return null // Return null for failed requests
+				} finally {
+					// Update progress
+					completedAddresses++
+					setProgress((completedAddresses / totalAddresses) * 100)
+				}
 			})
 		)
+
 		console.log("Final results:", results)
-		setResults(results) // Store results in state
+		const filteredResults = results.filter(result => result !== null) // Filter out null results
+		setResults(filteredResults) // Store results in state
 		setIsProcessing(false) // Hide progress bar when processing is complete
 	}
 
@@ -90,13 +100,22 @@ const GeocodeAddresses = () => {
 
 		// Generate Excel file
 		workbook.xlsx.writeBuffer().then(buffer => {
-			const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			})
 			const link = document.createElement("a")
 			link.href = window.URL.createObjectURL(blob)
 			link.download = "geocoding_results.xlsx"
 			link.click()
 		})
 	}
+
+
+
+const count_85_to_100 = results.filter(result => result.data?.features?.[0]?.properties?.confidence >= 0.85).length;
+const count_84_to_51 = results.filter(result => result.data?.features?.[0]?.properties?.confidence >= 0.51 && result.data?.features?.[0]?.properties?.confidence < .84).length;
+const count_0_to_50 = results.filter(result => result.data?.features?.[0]?.properties?.confidence >= 0 && result.data?.features?.[0]?.properties?.confidence <= 0.50).length;
+
 
 	return (
 		<div>
@@ -134,54 +153,31 @@ const GeocodeAddresses = () => {
 						<button onClick={exportToExcel}>Export to Excel</button>
 					</div>
 
-					<div>
-						<strong>Results Count:</strong>
-						<div>100%: {results.filter(result => result.data.features[0].properties.confidence * 100 === 100).length}</div>
-						<div>99-80%: {results.filter(result => result.data.features[0].properties.confidence * 100 >= 80 && result.data.features[0].properties.confidence < 100).length}</div>
-						<div>79-51%: {results.filter(result => result.data.features[0].properties.confidence * 100 >= 51 && result.data.features[0].properties.confidence < 80).length}</div>
-						<div>Below 50%: {results.filter(result => result.data.features[0].properties.confidence * 100 < 51).length}</div>
-					</div>
+          <div>
+  <strong>Results Count:</strong>
+  <div>85+%: {count_85_to_100}</div>
+  <div>51-84%: {count_84_to_51}</div>
+  <div>0-50%: {count_0_to_50}</div>
+</div>
 					<h2>Results preview:</h2>
 					<div style={{ maxHeight: "300px", overflowY: "auto" }}>
 						<ul>
 							{results.map((result, index) => (
 								<li key={index}>
-									<strong>Address:</strong> {result.address}
-									<br />
-									<strong>Confidence:</strong> {result.data.features[0].properties.confidence * 100}%
-									<br />
-									<strong>Match Type:</strong> {result.data.features[0].properties.match_type}
-									<br />
-									<strong>Accuracy:</strong> {result.data.features[0].properties.accuracy}
-									<br />
-									<strong>Source:</strong> {result.data.features[0].properties.source}
-									<br />
-									<strong>Longitude:</strong> {result.data.features[0].geometry.coordinates[0]}
-									<br />
-									<strong>Latitude:</strong> {result.data.features[0].geometry.coordinates[1]}
+									{/* Conditional rendering to prevent accessing properties of undefined */}
+									{result.address && <strong>Address:</strong>} {result.address} <br />
+									{result.data && result.data.features && result.data.features.length > 0 && result.data.features[0].properties && (
+										<>
+											<strong>Confidence:</strong> {(result.data.features[0].properties.confidence ).toFixed(2)}% <br />
+											<strong>Match Type:</strong> {result.data.features[0].properties.match_type} <br />
+											<strong>Accuracy:</strong> {result.data.features[0].properties.accuracy} <br />
+											<strong>Source:</strong> {result.data.features[0].properties.source} <br />
+											<strong>Longitude:</strong> {result.data.features[0].geometry.coordinates[0]} <br />
+											<strong>Latitude:</strong> {result.data.features[0].geometry.coordinates[1]} <br />
+										</>
+									)}
 								</li>
 							))}
-						</ul>
-					</div>
-				</>
-			)}
-
-			{results.length > 0 && (
-				<>
-					<h2>Results Below 50% Confidence:</h2>
-					<div style={{ maxHeight: "300px", overflowY: "auto" }}>
-						<ul>
-							{results
-								.filter(result => result.data.features[0].properties.confidence * 100 < 51)
-								.map((result, index) => (
-									<li key={index}>
-										<strong>Address:</strong> {result.address}
-										<br />
-										<strong>Confidence:</strong> {result.data.features[0].properties.confidence * 100}%
-										<br />
-										<strong>Match Type:</strong> {result.data.features[0].properties.match_type}							
-									</li>
-								))}
 						</ul>
 					</div>
 				</>
