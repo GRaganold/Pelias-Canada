@@ -1,30 +1,43 @@
-import { useState } from "react";
+// APIfetch.js
+
+import  { useState } from "react";
 import { GcdsButton } from "@cdssnc/gcds-components-react";
 import "@cdssnc/gcds-components-react/gcds.css"; // Import the CSS file if necessary
 import Loading from "../Loading";
 import PercentageCircle from "../PercentageCircle";
+import { copyToClipboard } from '../../assets/copyToClipboard'; // Adjust the path as necessary
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function APIfetch() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("");
   const [responseData, setResponseData] = useState(null);
-  const [setLastResponse] = useState("");
   const [loading, setLoading] = useState(false); // State for loading
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const fullAddress = `${address}, ${city}, ${province}`;
+
+    // Check if required fields are empty
+    if (!address || !city || !province) {
+      toast.error("Please enter address, city, and province.");
+      return;
+    }
+
     console.log("Form submitted with address:", fullAddress);
     sendRequest(fullAddress);
-    setAddress("");
-    setCity("");
-    setProvince("");
   };
+
   const sendRequest = (fullAddress) => {
     setLoading(true); // Set loading state to true when request is initiated
+
+    // Remove "#" characters from the address
+    const cleanedAddress = fullAddress.replace(/#/g, "");
+
     const url = `https://geocoder.alpha.phac.gc.ca/api/search?text=${encodeURIComponent(
-      fullAddress
+      cleanedAddress
     )}`;
 
     console.log("Sending request to:", url);
@@ -39,13 +52,36 @@ export default function APIfetch() {
       .then((data) => {
         console.log("Received data:", data);
         setResponseData(data); // Update state with response data
-        setLastResponse(fullAddress);
         setLoading(false); // Set loading state to false when request is completed
       })
       .catch((error) => {
         console.error("Error:", error);
+        toast.error("An error occurred. Please try again later.");
         setLoading(false); // Set loading state to false when request encounters an error
       });
+  };
+
+  const handleCopyLatitude = () => {
+    if (!responseData || !responseData.features || !responseData.features[0]) {
+      toast.error("Latitude information is not available.");
+      return;
+    }
+
+    const latitude = responseData.features[0].geometry.coordinates[1];
+    copyToClipboard(latitude.toString(), () => {
+      toast.success("Latitude copied to clipboard!");
+    });
+  };
+
+  const handleCopyLongitude = () => {
+    if (!responseData || !responseData.features || !responseData.features[0]) {
+      toast.error("Longitude information is not available.");
+      return;
+    }
+
+    copyToClipboard(responseData.features[0].geometry.coordinates[0].toString(), () => {
+      toast.success("Longitude copied to clipboard!");
+    });
   };
 
   return (
@@ -105,7 +141,7 @@ export default function APIfetch() {
             type="text"
             value={province}
             onChange={(e) => setProvince(e.target.value)}
-            placeholder="On"
+            placeholder="ON"
           />
         </div>
         <div
@@ -119,16 +155,15 @@ export default function APIfetch() {
             Search
           </GcdsButton>
           <GcdsButton
-          size="regular"
-          type="reset" 
-          buttonRole="secondary"
+            size="regular"
+            type="reset"
+            buttonRole="secondary"
             buttonId="reset"
             onClick={() => {
               setAddress("");
               setCity("");
               setProvince("");
-              setLastResponse("");
-              setResponseData("");
+              setResponseData(null);
             }}
           >
             Reset
@@ -140,7 +175,7 @@ export default function APIfetch() {
       {loading && <Loading />}
 
       {/* Display response data if available */}
-      {responseData && (
+      {responseData && responseData.features && responseData.features[0] && (
         <div>
           <h2>
             Information for <i>{responseData.geocoding.query.text}</i> returned:
@@ -187,15 +222,16 @@ export default function APIfetch() {
 
           <p>
             Longitude: {responseData.features[0].geometry.coordinates[0]}
-            <button>Copy</button>
+            <button style={{marginLeft: "10px"}} onClick={handleCopyLongitude}>Copy</button>
           </p>
 
           <p>
             Latitude: {responseData.features[0].geometry.coordinates[1]}
-            <button>Copy</button>
+            <button style={{marginLeft: "10px"}} onClick={handleCopyLatitude}>Copy</button>
           </p>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }

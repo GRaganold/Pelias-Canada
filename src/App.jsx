@@ -3,6 +3,7 @@ import Layout from "./layout/Layout";
 import BulkInput from "./pages/bulkInput/BulkInput";
 import LandingPage from "./pages/landingPage/Landingpage";
 import RShinyAPIPage from "./pages/apiPages/RShinyAPIPage"
+import PythonAPIPage from "./pages/apiPages/PythonApiPage";
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
                     {/* Render BulkInput component for the "/bulkinput" route */}
                     <Route path="bulkinput" element={<BulkInput />} />
                     <Route path="rshinyapi" element={<RShinyAPIPage />} />
+                    <Route path="pythonapi" element={<PythonAPIPage />} />
 
                     
                 </Route>
