@@ -40,6 +40,11 @@ function Layout() {
 									RShiny Api
 								</Link>
 							</GcdsNavLink>
+							<GcdsNavLink>
+								<Link to="pythonapi" className="nav-link">
+									Python Api
+								</Link>
+							</GcdsNavLink>
 						</GcdsNavGroup>
 					</GcdsTopNav>
 				</nav>

@@ -36,9 +36,11 @@ export default function APIfetch() {
     // Remove "#" characters from the address
     const cleanedAddress = fullAddress.replace(/#/g, "");
 
-    const url = `https://geocoder.alpha.phac.gc.ca/api/search?text=${encodeURIComponent(
+    const url = `https://geocoder.alpha.phac.gc.ca/api/v1/search?text=${encodeURIComponent(
       cleanedAddress
     )}`;
+
+  
 
     console.log("Sending request to:", url);
 
