@@ -1,26 +1,29 @@
 // APIfetch.js
 
-import  { useState } from "react";
-import { GcdsButton } from "@cdssnc/gcds-components-react";
+import { useState } from "react";
+import { GcdsButton, GcdsDetails } from "@cdssnc/gcds-components-react";
 import "@cdssnc/gcds-components-react/gcds.css"; // Import the CSS file if necessary
 import Loading from "../Loading";
 import PercentageCircle from "../PercentageCircle";
-import { copyToClipboard } from '../../assets/copyToClipboard'; // Adjust the path as necessary
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { copyToClipboard } from "../../assets/copyToClipboard"; // Adjust the path as necessary
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import MapComponentOL from "../MapComponent"; // Adjust the path as necessary
 
 export default function APIfetch() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("");
   const [responseData, setResponseData] = useState(null);
-  const [loading, setLoading] = useState(false); // State for loading
+  const [loading, setLoading] = useState(false);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [confidence, setConfidence] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const fullAddress = `${address}, ${city}, ${province}`;
 
-    // Check if required fields are empty
     if (!address || !city || !province) {
       toast.error("Please enter address, city, and province.");
       return;
@@ -31,16 +34,13 @@ export default function APIfetch() {
   };
 
   const sendRequest = (fullAddress) => {
-    setLoading(true); // Set loading state to true when request is initiated
+    setLoading(true);
 
-    // Remove "#" characters from the address
     const cleanedAddress = fullAddress.replace(/#/g, "");
 
     const url = `https://geocoder.alpha.phac.gc.ca/api/v1/search?text=${encodeURIComponent(
       cleanedAddress
     )}`;
-
-  
 
     console.log("Sending request to:", url);
 
@@ -53,13 +53,20 @@ export default function APIfetch() {
       })
       .then((data) => {
         console.log("Received data:", data);
-        setResponseData(data); // Update state with response data
-        setLoading(false); // Set loading state to false when request is completed
+        setResponseData(data);
+        setLoading(false);
+
+        if (data.features && data.features.length > 0) {
+          const coords = data.features[0].geometry.coordinates;
+          setLatitude(coords[1]);
+          setLongitude(coords[0]);
+          setConfidence(data.features[0].properties.confidence);
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
         toast.error("An error occurred. Please try again later.");
-        setLoading(false); // Set loading state to false when request encounters an error
+        setLoading(false);
       });
   };
 
@@ -81,8 +88,40 @@ export default function APIfetch() {
       return;
     }
 
-    copyToClipboard(responseData.features[0].geometry.coordinates[0].toString(), () => {
-      toast.success("Longitude copied to clipboard!");
+    copyToClipboard(
+      responseData.features[0].geometry.coordinates[0].toString(),
+      () => {
+        toast.success("Longitude copied to clipboard!");
+      }
+    );
+  };
+
+  const handleCopyLatitudeLongitude = () => {
+    if (!responseData || !responseData.features || !responseData.features[0]) {
+      toast.error("Latitude and Longitude information is not available.");
+      return;
+    }
+
+    const latitude = responseData.features[0].geometry.coordinates[1];
+    const longitude = responseData.features[0].geometry.coordinates[0];
+    const latLong = `${latitude}, ${longitude}`;
+
+    copyToClipboard(latLong, () => {
+      toast.success("Latitude and Longitude copied to clipboard!");
+    });
+  };
+
+  const handleCopyLongitudeLatitude = () => {
+    if (!responseData || !responseData.features || !responseData.features[0]) {
+      toast.error("Latitude and Longitude information is not available.");
+      return;
+    }
+
+    const latitude = responseData.features[0].geometry.coordinates[1];
+    const longitude = responseData.features[0].geometry.coordinates[0];
+    const longLat = `${longitude}, ${latitude}`;
+    copyToClipboard(longLat, () => {
+      toast.success("Longitude and Latitude copied to clipboard!");
     });
   };
 
@@ -97,15 +136,9 @@ export default function APIfetch() {
           alignItems: "center",
         }}
       >
-        <h4> Please enter an address, a city, and the province </h4>
-        <div
-          style={{
-            display: "flex",
-            width: "300px",
-            justifyContent: "space-between",
-          }}
-        >
-          <label>Address: </label>
+        <h4>Enter an address, city, and province</h4>
+        <div style={{ display: "flex", width: "300px", justifyContent: "space-between" }}>
+          <label>Address:</label>
           <input
             required
             type="text"
@@ -114,14 +147,8 @@ export default function APIfetch() {
             placeholder="110 Laurier Ave W"
           />
         </div>
-        <div
-          style={{
-            display: "flex",
-            width: "300px",
-            justifyContent: "space-between",
-          }}
-        >
-          <label>City: </label>
+        <div style={{ display: "flex", width: "300px", justifyContent: "space-between" }}>
+          <label>City:</label>
           <input
             required
             type="text"
@@ -130,14 +157,8 @@ export default function APIfetch() {
             placeholder="Ottawa"
           />
         </div>
-        <div
-          style={{
-            display: "flex",
-            width: "300px",
-            justifyContent: "space-between",
-          }}
-        >
-          <label>Province: </label>
+        <div style={{ display: "flex", width: "300px", justifyContent: "space-between" }}>
+          <label>Province:</label>
           <input
             required
             type="text"
@@ -146,13 +167,7 @@ export default function APIfetch() {
             placeholder="ON"
           />
         </div>
-        <div
-          style={{
-            display: "flex",
-            width: "300px",
-            justifyContent: "space-around",
-          }}
-        >
+        <div style={{ display: "flex", width: "300px", justifyContent: "space-around" }}>
           <GcdsButton type="submit" buttonId="submit" size="regular">
             Search
           </GcdsButton>
@@ -173,10 +188,8 @@ export default function APIfetch() {
         </div>
       </form>
 
-      {/* Display loading state if waiting for response */}
       {loading && <Loading />}
 
-      {/* Display response data if available */}
       {responseData && responseData.features && responseData.features[0] && (
         <div>
           <h2>
@@ -187,11 +200,7 @@ export default function APIfetch() {
             <div style={{ display: "flex", justifyContent: "space-evenly" }}>
               <div>
                 <p>Call Confidence</p>
-                <PercentageCircle
-                  confidencePercentage={
-                    responseData.features[0].properties.confidence
-                  }
-                />
+                <PercentageCircle confidencePercentage={confidence} />
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <p>
@@ -224,13 +233,56 @@ export default function APIfetch() {
 
           <p>
             Longitude: {responseData.features[0].geometry.coordinates[0]}
-            <button style={{marginLeft: "10px"}} onClick={handleCopyLongitude}>Copy</button>
+            <button style={{ marginLeft: "10px" }} onClick={handleCopyLongitude}>
+              Copy
+            </button>
           </p>
 
           <p>
             Latitude: {responseData.features[0].geometry.coordinates[1]}
-            <button style={{marginLeft: "10px"}} onClick={handleCopyLatitude}>Copy</button>
+            <button style={{ marginLeft: "10px" }} onClick={handleCopyLatitude}>
+              Copy
+            </button>
           </p>
+
+          <GcdsDetails detailsTitle="See more options ">
+            <p>
+              Longitude, Latitude :{" "}
+              {responseData.features[0].geometry.coordinates[0]} ,{" "}
+              {responseData.features[0].geometry.coordinates[1]}
+              <button
+                style={{ marginLeft: "10px" }}
+                onClick={handleCopyLongitudeLatitude}
+              >
+                Copy
+              </button>
+            </p>
+
+            <p>
+              Latitude, Longitude :{" "}
+              {responseData.features[0].geometry.coordinates[1]} ,{" "}
+              {responseData.features[0].geometry.coordinates[0]}
+              <button
+                style={{ marginLeft: "10px" }}
+                onClick={handleCopyLatitudeLongitude}
+              >
+                Copy
+              </button>
+            </p>
+          </GcdsDetails>
+
+          {/* Pass latitude and longitude to MapComponentOL */}
+          <div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
+            <GcdsDetails detailsTitle="View the Map">
+              <MapComponentOL
+                mapContentJSON={[
+                  `${longitude},${latitude},${
+                    responseData.features[0].properties.confidence * 100
+                  }`,
+                ]}
+              />
+            </GcdsDetails>
+          </div>
         </div>
       )}
       <ToastContainer />

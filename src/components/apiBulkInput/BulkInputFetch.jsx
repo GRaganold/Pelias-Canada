@@ -1,4 +1,3 @@
-// TestComponent.js
 import { useState } from "react"
 import FileUploadComponent from "./FileUploadComponent"
 import FileProcessorComponent from "./FileProcessorComponent"
