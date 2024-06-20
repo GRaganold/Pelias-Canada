@@ -1,5 +1,0 @@
-
-
-// feat : geo ; long lat
-// confidence, match ,accuracy,
-// source : "open address"
