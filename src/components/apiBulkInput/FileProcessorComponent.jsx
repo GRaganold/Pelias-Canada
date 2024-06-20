@@ -252,10 +252,11 @@ const FileProcessorComponent = ({ jsonData }) => {
 						</label>
 					</div>
 					<br />
+					
 					<GcdsButton size="small" onClick={exportToExcel}>
 						Export to Excel
 					</GcdsButton>
-					<GcdsButton size="small" onClick={exportToCSV}>
+					<GcdsButton size="small" onClick={exportToCSV} style={{ marginLeft: 10 }}>
 						Export to CSV
 					</GcdsButton>
 					<div>
