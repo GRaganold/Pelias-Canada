@@ -168,7 +168,11 @@ export default function APIfetch() {
           />
         </div>
         <div style={{ display: "flex", width: "300px", justifyContent: "space-around" }}>
-          <GcdsButton type="submit" buttonId="submit" size="regular">
+          <GcdsButton type="submit" buttonId="submit" size="regular"   onClick={() => {
+              setAddress("");
+              setCity("");
+              setProvince("");             
+            }}>
             Search
           </GcdsButton>
           <GcdsButton
