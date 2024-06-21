@@ -1,5 +1,3 @@
-// APIfetch.js
-
 import { useState } from "react";
 import { GcdsButton, GcdsDetails } from "@cdssnc/gcds-components-react";
 import "@cdssnc/gcds-components-react/gcds.css"; // Import the CSS file if necessary
@@ -19,6 +17,7 @@ export default function APIfetch() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [confidence, setConfidence] = useState(null);
+  const [unitNumber, setUnitNumber] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,14 +32,50 @@ export default function APIfetch() {
     sendRequest(fullAddress);
   };
 
+  const extractApartmentNumber = (address) => {
+    const aptPattern1 = /\b\d+\s*-\s*\d+\b/;  // Matches patterns like 711 - 3100
+    const aptPattern2 = /\b\d+\b/;            // Matches standalone numbers like 120
+    
+    let match = address.match(aptPattern1);
+    let apartmentNumber = "";
+    let unitNumber = "";
+    let mainAddress = address.trim();
+    let streetAddress = "";
+    
+    if (match) {
+      apartmentNumber = match[0];
+      const parts = apartmentNumber.split('-').map(part => part.trim());
+      mainAddress = mainAddress.replace(apartmentNumber, "").trim();
+      streetAddress = `${parts[1]} ${mainAddress}`.trim();
+      apartmentNumber = {
+        firstPart: parts[0],
+        secondPart: parts[1]
+      };
+      unitNumber = parts[0];
+    } else {
+      match = address.match(aptPattern2);
+      if (match) {
+        apartmentNumber = match[0];
+        mainAddress = mainAddress.replace(apartmentNumber, "").trim();
+        streetAddress = `${apartmentNumber} ${mainAddress}`.trim();
+        apartmentNumber = {
+          firstPart: apartmentNumber,
+          secondPart: ""
+        };
+        unitNumber = apartmentNumber.secondPart;
+      }
+    }
+
+    return { streetAddress, apartmentNumber, unitNumber };
+  };
+
   const sendRequest = (fullAddress) => {
     setLoading(true);
 
-    const cleanedAddress = fullAddress.replace(/#/g, "");
+    const { streetAddress, apartmentNumber, unitNumber } = extractApartmentNumber(fullAddress);
+    setUnitNumber(unitNumber);
 
-    const url = `https://geocoder.alpha.phac.gc.ca/api/v1/search?text=${encodeURIComponent(
-      cleanedAddress
-    )}`;
+    const url = `https://geocoder.alpha.phac.gc.ca/api/v1/search?text=${encodeURIComponent(streetAddress)}`;
 
     console.log("Sending request to:", url);
 
@@ -53,7 +88,6 @@ export default function APIfetch() {
       })
       .then((data) => {
         console.log("Received data:", data);
-        setResponseData(data);
         setLoading(false);
 
         if (data.features && data.features.length > 0) {
@@ -61,6 +95,15 @@ export default function APIfetch() {
           setLatitude(coords[1]);
           setLongitude(coords[0]);
           setConfidence(data.features[0].properties.confidence);
+
+          const result = {
+            ...data,
+            apartmentNumber,
+            unitNumber,
+          };
+          setResponseData(result);
+        } else {
+          setResponseData({ ...data, apartmentNumber, unitNumber });
         }
       })
       .catch((error) => {
@@ -137,7 +180,13 @@ export default function APIfetch() {
         }}
       >
         <h4>Enter an address, city, and province</h4>
-        <div style={{ display: "flex", width: "300px", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            width: "300px",
+            justifyContent: "space-between",
+          }}
+        >
           <label>Address:</label>
           <input
             required
@@ -147,7 +196,13 @@ export default function APIfetch() {
             placeholder="110 Laurier Ave W"
           />
         </div>
-        <div style={{ display: "flex", width: "300px", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            width: "300px",
+            justifyContent: "space-between",
+          }}
+        >
           <label>City:</label>
           <input
             required
@@ -157,7 +212,13 @@ export default function APIfetch() {
             placeholder="Ottawa"
           />
         </div>
-        <div style={{ display: "flex", width: "300px", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            width: "300px",
+            justifyContent: "space-between",
+          }}
+        >
           <label>Province:</label>
           <input
             required
@@ -167,12 +228,18 @@ export default function APIfetch() {
             placeholder="ON"
           />
         </div>
-        <div style={{ display: "flex", width: "300px", justifyContent: "space-around" }}>
-          <GcdsButton type="submit" buttonId="submit" size="regular"   onClick={() => {
-              setAddress("");
-              setCity("");
-              setProvince("");             
-            }}>
+        <div
+          style={{
+            display: "flex",
+            width: "300px",
+            justifyContent: "space-around",
+          }}
+        >
+          <GcdsButton
+            type="submit"
+            buttonId="submit"
+            size="regular"
+          >
             Search
           </GcdsButton>
           <GcdsButton
@@ -197,8 +264,13 @@ export default function APIfetch() {
       {responseData && responseData.features && responseData.features[0] && (
         <div>
           <h2>
-            Information for <i>{responseData.geocoding.query.text}</i> returned:
-          </h2>
+            Information for{" "}
+            <i>{unitNumber && (
+            <>
+               {unitNumber} -
+            </>
+          )} {responseData.geocoding.query.text}</i> returned:
+          </h2>          
           <div style={{ border: "1px solid black", padding: "4px" }}>
             <h3>Accuracy information</h3>
             <div style={{ display: "flex", justifyContent: "space-evenly" }}>
@@ -221,13 +293,7 @@ export default function APIfetch() {
                 </p>
               </div>
             </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                fontSize: "10px",
-              }}
-            >
+            <div style={{ display: "flex", justifyContent: "flex-end", fontSize: "10px" }}>
               <i>
                 Information provided by Pelias Geocoder v
                 {responseData.geocoding.version}
@@ -249,40 +315,29 @@ export default function APIfetch() {
             </button>
           </p>
 
-          <GcdsDetails detailsTitle="See more options ">
+          <GcdsDetails detailsTitle="See more options">
             <p>
-              Longitude, Latitude :{" "}
-              {responseData.features[0].geometry.coordinates[0]} ,{" "}
+              Longitude, Latitude : {responseData.features[0].geometry.coordinates[0]} ,{" "}
               {responseData.features[0].geometry.coordinates[1]}
-              <button
-                style={{ marginLeft: "10px" }}
-                onClick={handleCopyLongitudeLatitude}
-              >
+              <button style={{ marginLeft: "10px" }} onClick={handleCopyLongitudeLatitude}>
                 Copy
               </button>
             </p>
 
             <p>
-              Latitude, Longitude :{" "}
-              {responseData.features[0].geometry.coordinates[1]} ,{" "}
+              Latitude, Longitude : {responseData.features[0].geometry.coordinates[1]} ,{" "}
               {responseData.features[0].geometry.coordinates[0]}
-              <button
-                style={{ marginLeft: "10px" }}
-                onClick={handleCopyLatitudeLongitude}
-              >
+              <button style={{ marginLeft: "10px" }} onClick={handleCopyLatitudeLongitude}>
                 Copy
               </button>
             </p>
           </GcdsDetails>
 
-          {/* Pass latitude and longitude to MapComponentOL */}
           <div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
             <GcdsDetails detailsTitle="View the Map">
               <MapComponentOL
                 mapContentJSON={[
-                  `${longitude},${latitude},${
-                    responseData.features[0].properties.confidence * 100
-                  }`,
+                  `${longitude},${latitude},${responseData.features[0].properties.confidence * 100}`,
                 ]}
               />
             </GcdsDetails>
