@@ -19,6 +19,7 @@ export default function APIfetch() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [confidence, setConfidence] = useState(null);
+  const [aptNumber, setAptNumber] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,15 +36,32 @@ export default function APIfetch() {
 
   const sendRequest = (fullAddress) => {
     setLoading(true);
-
-    const cleanedAddress = fullAddress.replace(/#/g, "");
-
-    const url = `https://geocoder.alpha.phac.gc.ca/api/v1/search?text=${encodeURIComponent(
-      cleanedAddress
-    )}`;
-
+  
+    // Function to extract and remove the apartment number
+    const extractApartmentNumber = (address) => {
+      // Regular expression to match typical apartment/unit number patterns
+      const aptPattern = /(\b\d+-\d+\b|\b[A-Za-z]*\s?\d+\b)/;
+      const match = address.match(aptPattern);
+      let cleanedAddress = address;
+      let apartmentNumber = '';
+  
+      if (match) {
+        apartmentNumber = match[0];
+        cleanedAddress = address.replace(match[0], '').trim();
+      }
+      setAptNumber(apartmentNumber)
+      return { cleanedAddress, apartmentNumber };
+    };
+  
+    // Extract and clean the address
+    const { cleanedAddress, apartmentNumber } = extractApartmentNumber(fullAddress);
+  
+    // Construct the URL for the API request
+    const url = `https://geocoder.alpha.phac.gc.ca/api/v1/search?text=${encodeURIComponent(cleanedAddress)}`;
+  
     console.log("Sending request to:", url);
-
+  
+    // Make the API request
     fetch(url)
       .then((response) => {
         if (!response.ok) {
@@ -53,14 +71,23 @@ export default function APIfetch() {
       })
       .then((data) => {
         console.log("Received data:", data);
-        setResponseData(data);
         setLoading(false);
-
+  
         if (data.features && data.features.length > 0) {
           const coords = data.features[0].geometry.coordinates;
           setLatitude(coords[1]);
           setLongitude(coords[0]);
           setConfidence(data.features[0].properties.confidence);
+  
+          // Include the apartment number in the response data
+          const result = {
+            ...data,
+            apartmentNumber
+          };
+          setResponseData(result);
+        } else {
+          // Handle the case where no features are found
+          setResponseData({ ...data, apartmentNumber });
         }
       })
       .catch((error) => {
@@ -69,6 +96,7 @@ export default function APIfetch() {
         setLoading(false);
       });
   };
+  
 
   const handleCopyLatitude = () => {
     if (!responseData || !responseData.features || !responseData.features[0]) {
@@ -169,9 +197,9 @@ export default function APIfetch() {
         </div>
         <div style={{ display: "flex", width: "300px", justifyContent: "space-around" }}>
           <GcdsButton type="submit" buttonId="submit" size="regular"   onClick={() => {
-              setAddress("");
-              setCity("");
-              setProvince("");             
+              // setAddress("");
+              // setCity("");
+              // setProvince("");             
             }}>
             Search
           </GcdsButton>
@@ -197,7 +225,7 @@ export default function APIfetch() {
       {responseData && responseData.features && responseData.features[0] && (
         <div>
           <h2>
-            Information for <i>{responseData.geocoding.query.text}</i> returned:
+            Information for <i>{aptNumber+` - `}{responseData.geocoding.query.text}</i> returned:
           </h2>
           <div style={{ border: "1px solid black", padding: "4px" }}>
             <h3>Accuracy information</h3>

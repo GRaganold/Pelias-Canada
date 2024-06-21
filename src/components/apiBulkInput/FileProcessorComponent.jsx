@@ -18,7 +18,7 @@ const FileProcessorComponent = ({ jsonData }) => {
 
 	const replaceSpecialCharacters = str => {
 		if (typeof str !== "string") return ""
-		return str.replace(/[^\w\s-]/gi, "")
+		return str.replace(/[^\w\s-]/gi, "")		
 	}
 
 	const processJsonData = useCallback(() => {
