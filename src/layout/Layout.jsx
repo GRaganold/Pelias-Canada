@@ -1,9 +1,14 @@
-import { Outlet, Link } from "react-router-dom"
-import { GcdsHeader, GcdsFooter, GcdsContainer, GcdsTopNav, GcdsNavGroup, GcdsNavLink } from "@cdssnc/gcds-components-react"
+import { Outlet } from "react-router-dom"
+import {
+	GcdsHeader,
+	GcdsFooter,
+	GcdsContainer,
+} from "@cdssnc/gcds-components-react"
 import "@cdssnc/gcds-components-react/gcds.css"
 
 import "./Layout.css"
 import Breadcrumb from "../components/Breadcrum"
+import TopNav from "./TopNav"
 
 function Layout() {
 	return (
@@ -14,39 +19,10 @@ function Layout() {
 						Skip to main content
 					</a>
 				</div>
-				<nav slot="menu">
-					<GcdsTopNav label="Top navigation" alignment="right">
-						<GcdsNavLink slot="home">
-							<Link to="home" className="nav-link" style={{ fontWeight: "bold" }}>
-								Pelias Geocoder
-							</Link>
-						</GcdsNavLink>
-						<GcdsNavLink>
-							<Link to="home" className="nav-link">
-								Home
-							</Link>
-						</GcdsNavLink>
-						<GcdsNavLink>
-							<Link to="bulkinput" className="nav-link">
-								Bulk Input
-							</Link>
-						</GcdsNavLink>
-						<GcdsNavGroup openTrigger="Features" menuLabel="Features">
-							<GcdsNavLink href="#" current>
-								Developers
-							</GcdsNavLink>
-							<GcdsNavLink>
-								<Link to="rshinyapi" className="nav-link">
-									RShiny Api
-								</Link>
-							</GcdsNavLink>
-							<GcdsNavLink>
-								<Link to="pythonapi" className="nav-link">
-									Python Api
-								</Link>
-							</GcdsNavLink>
-						</GcdsNavGroup>
-					</GcdsTopNav>
+				<nav slot="menu" style={{backgroundColor:"#f1f2f3", }}>				
+					<GcdsContainer size="xl" centered color="black"  >
+						<TopNav />
+					</GcdsContainer>
 				</nav>
 			</GcdsHeader>
 
@@ -57,6 +33,7 @@ function Layout() {
 				style={{
 					flexGrow: "1",
 				}}
+				padding="400"
 				id="main-content"
 			>
 				<Breadcrumb />
