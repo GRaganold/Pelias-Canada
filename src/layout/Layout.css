@@ -11,17 +11,6 @@
   transform: translateY(0%);
 }
 
-.nav-link {
-  color: #303030;
-  text-decoration: none;
-  font-weight: normal;
-}
-
-.nav-link:hover {
-  color: blue;
-  text-decoration: underline;
-}
-
 
 .breadcrumb {
   display: flex;
