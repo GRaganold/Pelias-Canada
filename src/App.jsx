@@ -4,6 +4,7 @@ import BulkInput from "./pages/bulkInput/BulkInput";
 import LandingPage from "./pages/landingPage/Landingpage";
 import RShinyAPIPage from "./pages/apiPages/RShinyAPIPage"
 import PythonAPIPage from "./pages/apiPages/PythonApiPage";
+import FAQ from "./pages/FAQ/FAQ";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                     <Route path="bulkinput" element={<BulkInput />} />
                     <Route path="rshinyapi" element={<RShinyAPIPage />} />
                     <Route path="pythonapi" element={<PythonAPIPage />} />
+                    <Route path="frequentlyaskedquestions" element={<FAQ />} />
 
                     
                 </Route>
