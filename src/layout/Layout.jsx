@@ -11,14 +11,21 @@ import Breadcrumb from "../components/Breadcrum"
 import TopNav from "./TopNav"
 
 function Layout() {
+
+	const scrollToCategory = () => {
+		const element = document.getElementById("main-content")
+		if (element) {
+			element.scrollIntoView({ behavior: "smooth", block: "start" })
+		}
+	}
 	return (
 		<>
-			<GcdsHeader skipToHref="main-content" padding="150px">
+			<GcdsHeader skipToHref="main-content"  padding="150px">
 				<div slot="skip-to-nav">
-					<a href="#main-content" className="skip-to-content-link">
+					<button onClick={scrollToCategory} className="skip-to-content-link">
 						Skip to main content
-					</a>
-				</div>
+					</button>
+			</div>
 				<nav slot="menu" style={{backgroundColor:"#f1f2f3", }}>				
 					<GcdsContainer size="xl" centered color="black"  >
 						<TopNav />
