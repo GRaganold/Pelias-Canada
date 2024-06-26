@@ -52,8 +52,11 @@ export default function FAQ() {
 				// Parse CSV string to array of objects
 				const parsedData = parse(csvString, { header: true }).data
 
+				// Filter out items with null or empty categories
+				const filteredData = parsedData.filter(item => item.Categories && item.Categories.trim() !== "")
+
 				// Group data by category
-				const groupedData = parsedData.reduce((acc, item) => {
+				const groupedData = filteredData.reduce((acc, item) => {
 					const category = item.Categories // Assuming "Categories" is the field name
 					if (!acc[category]) {
 						acc[category] = []
@@ -131,4 +134,3 @@ export default function FAQ() {
 		</div>
 	)
 }
-

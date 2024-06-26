@@ -17,6 +17,13 @@
   font-size: 18px;
 }
 
+.topnav .dropdown .dropbtn:focus {
+  outline: 2px solid #000; /* Change the color to match your design */
+  outline-offset: 4px; /* Add some space between the outline and the button */
+  background-color: #e0e0e0; /* Optional: Change background color on focus */
+  color: #000;
+}
+
 .topnav .left {
   flex: 1; /* Takes up remaining space */
 }
@@ -37,6 +44,16 @@
 
 .dropdown .dropbtn {
   color: #333333;
+  padding: 16px 16px;
+  text-decoration: none;
+  font-size: 18px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.dropdown .dropbtn {
+  color: #333333;
   border: none;
   outline: none;
   padding: 16px 16px;
@@ -46,7 +63,6 @@
   font-family: inherit;
   margin: 0;
 }
-
 .dropdown-content {
   display: none;
   position: absolute;
