@@ -9,7 +9,7 @@ export default function RShinyAPIPage() {
   const rCode = `library(httr)
  
 # Set the Pelias API endpoint URL
-pelias_url <- "https://geocoder.alpha.phac.gc.ca/api/search"
+pelias_url <- "https://geocoder.alpha.phac.gc.ca/api/v1/search?text="
  
 # Read the quakes dataset
 data("USArrests")
