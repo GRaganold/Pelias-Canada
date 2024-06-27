@@ -9,6 +9,14 @@ const Breadcrumb = () => {
     return null; // If it's the home page, don't render the breadcrumb
   }
 
+  // Helper function to format the URL segments
+  const formatBreadcrumb = (str) => {
+    return str
+      .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+      .replace(/-/g, ' ') // Replace dashes with spaces
+      .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
+  };
+
   return (
     <nav aria-label="breadcrumb">
       <ol className="breadcrumb">
@@ -18,8 +26,8 @@ const Breadcrumb = () => {
         {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join('/')}`;
           return (
-            <li key={to} className="breadcrumb-item">
-              <Link to={to}>{value}</Link>
+            <li key={to} className="breadcrumb-item" >
+              <Link to={to} aria-disabled="true" >{formatBreadcrumb(value)}</Link>
             </li>
           );
         })}
@@ -29,3 +37,4 @@ const Breadcrumb = () => {
 };
 
 export default Breadcrumb;
+
