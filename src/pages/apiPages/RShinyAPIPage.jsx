@@ -61,7 +61,7 @@ print(USArrests)`;
       <GcdsHeading tag="h2" marginTop="50">
         R Shiny API
       </GcdsHeading>
-      <div style={{ textAlign: 'justify' }}>
+      <div style={{ textAlign: "justify", overflow: "auto" }}>
         <p>
           Developing in-house geolocation services within PHAC to improve accuracy, precision, cost-effectiveness, security, and transparency. Phases include tech exploration, prototyping, refining based on user interaction, and expanding coverage. Advantages include enhanced privacy, cost savings, traceability, independence from external resources, flexibility, and modularity. Avoids reliance on third-party services, ensuring data stays within PHAC&#39;s network and reducing costs associated with external queries.
         </p>
