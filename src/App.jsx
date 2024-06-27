@@ -15,11 +15,11 @@ function App() {
                     <Route index element={<LandingPage />} />
                     <Route path="home" element={<LandingPage />} />
                     {/* Render BulkInput component for the "/bulkinput" route */}
-                    <Route path="bulkinput" element={<BulkInput />} />
+                    <Route path="bulk-input" element={<BulkInput />} />
                     
-                    <Route path="rshinyapi" element={<RShinyAPIPage />} />
-                    <Route path="pythonapi" element={<PythonAPIPage />} />
-                    <Route path="frequentlyaskedquestions" element={<FAQ />} />
+                    <Route path="r-shiny-api" element={<RShinyAPIPage />} />
+                    <Route path="python-api" element={<PythonAPIPage />} />
+                    <Route path="frequently-asked-questions" element={<FAQ />} />
 
                     
                 </Route>

@@ -20,14 +20,14 @@ function Layout() {
 	}
 	return (
 		<>
-			<GcdsHeader skipToHref="main-content"  padding="150px">
+			<GcdsHeader skipToHref="main-content"  padding="150px" height="auto" >
 				<div slot="skip-to-nav">
 					<button onClick={scrollToCategory} className="skip-to-content-link">
 						Skip to main content
 					</button>
 			</div>
-				<nav slot="menu" style={{backgroundColor:"#f1f2f3", }}>				
-					<GcdsContainer size="xl" centered color="black"  >
+				<nav slot="menu" style={{backgroundColor:"#f1f2f3",}}>				
+					<GcdsContainer size="xl" centered color="black"    >
 						<TopNav />
 					</GcdsContainer>
 				</nav>

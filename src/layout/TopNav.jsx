@@ -1,78 +1,121 @@
-import { useState, useRef } from "react";
-import "./TopNav.css"; // Assuming you have a separate CSS file for styles
-import { Link } from "react-router-dom";
-import { FaChevronDown } from "react-icons/fa"; 
+import  { useState, useEffect, useRef } from "react";
+import "./TopNav.css";
+import { Link, NavLink } from "react-router-dom";
 
-const TopNav = () => {
-  const [responsive, setResponsive] = useState(false);
+export default function TopNav() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const lastMenuItemRef = useRef(null);
+  const menuRef = useRef(null);
 
-  const handleToggle = (event) => {
-    event.preventDefault(); // Prevent the default anchor behavior
-    setResponsive(!responsive);
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.classList.add("no-scroll", "menu-open");
+    } else {
+      document.body.classList.remove("no-scroll", "menu-open");
+    }
+    return () => {
+      document.body.classList.remove("no-scroll", "menu-open");
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const handleMenuToggle = () => {
+    setMenuOpen(!menuOpen);
   };
 
   const handleDropdownToggle = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleDropdownToggle();
+  const handleFocusOut = (event) => {
+    if (!menuRef.current.contains(event.relatedTarget)) {
+      setMenuOpen(false);
     }
   };
 
-  const handleBlur = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.relatedTarget)) {
+  const handleKeyDownInDropdown = (event) => {
+    if (event.key === "Tab" && !event.shiftKey && event.target === lastMenuItemRef.current) {
       setDropdownOpen(false);
     }
   };
 
   return (
-    <nav className={`topnav ${responsive ? "responsive" : ""}`} id="myTopnav" aria-label="Main Navigation">
-      <div className="left">
-        <Link to="/home" style={{ fontWeight: "bold", fontSize: "25px" }}>
+    <nav>
+      <div className="body">
+        <Link to="/" className="title">
           Pelias Geocoder
         </Link>
-      </div>
-      <div className="right">
-        <Link to="/home">Home</Link>
-        <Link to="/bulkinput">Bulk Input</Link>
-        <div className="dropdown" ref={dropdownRef} onBlur={handleBlur}>
-          <button
-            className="dropbtn"
-            aria-haspopup="true"
-            aria-expanded={dropdownOpen}
-            onClick={handleDropdownToggle}
-            onKeyDown={handleKeyDown}
-          >
-            Developers <i className="fa fa-caret-down" aria-hidden="true"><FaChevronDown size="15px"/></i>
-          </button>
-          <div
-            className="dropdown-content"
-            aria-label="submenu"
-            style={{ display: dropdownOpen ? 'block' : 'none' }}
-          >
-            <Link to="/rshinyapi">RShiny Api</Link>
-            <Link to="/pythonapi">Python Api</Link>
-          </div>
-        </div>
-      </div>
-      <div>
-        <button
-          className="icon"
-          onClick={handleToggle}
-          aria-label="Toggle navigation"
-          aria-controls="myTopnav"
-          aria-expanded={responsive}
+        <div
+          className="menu"
+          onClick={handleMenuToggle}
+          onKeyPress={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              handleMenuToggle();
+            }
+          }}
+          role="button"
+          tabIndex="0"
+          aria-expanded={menuOpen}
+          aria-label="Toggle menu"
         >
-          &#9776;
-        </button>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <ul className={menuOpen ? "open" : ""} ref={menuRef} onBlur={handleFocusOut} tabIndex="-1">
+          <li>
+            <NavLink to="/home" tabIndex="0" className="active-exclude">
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/bulk-input">Bulk Input</NavLink>
+          </li>
+          <li className="dropdown">
+            <button
+              onClick={handleDropdownToggle}
+              className={`dropdown-button ${dropdownOpen ? "active" : ""}`}
+              aria-expanded={dropdownOpen}
+              aria-haspopup="true"
+            >
+              Developers
+            </button>
+            <ul
+              className={`dropdown-menu ${dropdownOpen ? "open" : ""}`}
+              onKeyDown={handleKeyDownInDropdown}
+              onBlur={() => {}}
+            >
+              <li>
+                <Link to="/r-shiny-api">R Shiny Api</Link>
+              </li>
+              <li>
+                <Link to="/python-api" ref={lastMenuItemRef}>
+                  Python Api
+                </Link>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <NavLink to="/frequently-asked-questions" tabIndex="0" ref={lastMenuItemRef}>
+              Frequently Asked Questions
+            </NavLink>
+          </li>
+        </ul>
       </div>
     </nav>
   );
-};
-
-export default TopNav;
+}
