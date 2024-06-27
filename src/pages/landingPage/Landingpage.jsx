@@ -21,11 +21,9 @@ export default function LandingPage() {
           external.
         </p>
       </div>
+      <section> 
       <APIfetch /> 
-
-
-
-       {/* <TestAPIfetch /> */}
+    </section>
     </>
   );
 }
