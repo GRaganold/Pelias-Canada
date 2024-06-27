@@ -51,7 +51,7 @@
 
 .question-container.active {
 	color: #000;
-    background-color: #ededed;
+	background-color: #ededed;
 	background-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.04), transparent);
 }
 

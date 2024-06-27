@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { parse } from "papaparse" // You can use papaparse for CSV parsing
 import { RiArrowDropDownLine } from "react-icons/ri" // Import your icon component
 import "./FAQ.css" // Import your CSS file
+import { Link } from "react-router-dom"
 
 // AccordionItem component for displaying each FAQ item
 const AccordionItem = ({ question, answer, isOpen, onClick }) => {
@@ -32,7 +33,6 @@ AccordionItem.propTypes = {
 	isOpen: PropTypes.bool.isRequired, // Required boolean prop to track open/close state
 	onClick: PropTypes.func.isRequired, // Required function prop to handle click events
 }
-
 
 export default function FAQ() {
 	const [jsonData, setJsonData] = useState(null) // State for parsed JSON data
@@ -102,31 +102,37 @@ export default function FAQ() {
 		<div className="container">
 			<h1> Frequently Asked Questions</h1> {/* Title for FAQ section */}
 			<div className="tableOfContents">
-				<div className="tableOfContentsList">
+				<ul style={{ listStyleType: "none" }} className="tableOfContentsList">
 					{jsonData &&
 						Object.keys(jsonData).map((category, categoryIndex) => (
-							<div className="tableOfContentsListItem"
-								key={categoryIndex} onClick={() => scrollToCategory(category)}>{category}
-							</div>
+							<Link
+								key={categoryIndex}
+								className="tableOfContentsListItem"
+								onClick={() => scrollToCategory(category)}
+								tabIndex="0"
+								style={{ textDecoration: "none", color: "#333333" }}
+							>
+								{category}
+							</Link>
 						))}
-				</div>
+				</ul>
 			</div>
-
 			{/* Render FAQ categories and items */}
 			{jsonData &&
 				Object.keys(jsonData).map((category, categoryIndex) => (
 					<div key={categoryIndex} className="category-container">
-						<h3 id={category}>{category}</h3> {/* Display FAQ category title */}
-						<ul>
+						<h2 id={category}>{category}</h2> {/* Display FAQ category title */}
+						<ul style={{ listStyleType: "none" }}>
 							{/* Render each FAQ item as an AccordionItem */}
 							{jsonData[category].map((item, itemIndex) => (
-								<AccordionItem
-									key={itemIndex}
-									question={item.Question} // Pass FAQ question to AccordionItem
-									answer={item.Answer} // Pass FAQ answer to AccordionItem
-									isOpen={activeIndices[categoryIndex] === itemIndex} // Track open/close state
-									onClick={() => handleItemClick(categoryIndex, itemIndex)} // Handle click event
-								/>
+								<li key={itemIndex}>
+									<AccordionItem
+										question={item.Question} // Pass FAQ question to AccordionItem
+										answer={item.Answer} // Pass FAQ answer to AccordionItem
+										isOpen={activeIndices[categoryIndex] === itemIndex} // Track open/close state
+										onClick={() => handleItemClick(categoryIndex, itemIndex)} // Handle click event
+									/>
+								</li>
 							))}
 						</ul>
 					</div>

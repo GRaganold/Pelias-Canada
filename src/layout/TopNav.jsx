@@ -1,6 +1,7 @@
 import  { useState, useEffect, useRef } from "react";
 import "./TopNav.css";
 import { Link, NavLink } from "react-router-dom";
+import { FaAngleDown } from "react-icons/fa";
 
 export default function TopNav() {
   const [menuOpen, setMenuOpen] = useState(false); // State for toggling the main menu
@@ -140,7 +141,7 @@ export default function TopNav() {
               aria-expanded={dropdownOpen}
               aria-haspopup="true"
             >
-              Developers
+              Developers {!dropdownOpen ? (<FaAngleDown style={{size: "5px"}}/>) : (<FaAngleDown style={{size: "5px", transform: "rotateZ(180deg)", transition: 'transition: transform 0.3s;'}}/>)}
             </button>
             <ul
               ref={dropdownMenuRef} // Assign ref to dropdown menu
