@@ -1,4 +1,4 @@
-import { Routes, Route, HashRouter } from "react-router-dom";
+import { Routes, Route, } from "react-router-dom";
 import Layout from "./layout/Layout";
 import BulkInput from "./pages/bulkInput/BulkInput";
 import LandingPage from "./pages/landingPage/Landingpage";
@@ -8,7 +8,7 @@ import FAQ from "./pages/FAQ/FAQ";
 
 function App() {
     return (
-        <HashRouter>
+    
             <Routes>
                 <Route path="/" element={<Layout />}>
                     {/* Render LandingPage component for both index and "/home" routes */}
@@ -24,7 +24,7 @@ function App() {
                     
                 </Route>
             </Routes>
-        </HashRouter>
+  
     );
 }
 
