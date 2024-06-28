@@ -1,33 +1,22 @@
-import { Outlet } from "react-router-dom"
-import {
-	GcdsHeader,
-	GcdsFooter,
-	GcdsContainer,
-} from "@cdssnc/gcds-components-react"
-import "@cdssnc/gcds-components-react/gcds.css"
+import { Outlet } from "react-router-dom";
+import { GcdsHeader, GcdsFooter, GcdsContainer } from "@cdssnc/gcds-components-react";
+import "@cdssnc/gcds-components-react/gcds.css";
+import Breadcrumb from "../components/Breadcrumb"; 
+import "./Layout.css";
 
-import "./Layout.css"
-import Breadcrumb from "../components/Breadcrum"
-import TopNav from "./TopNav"
+import TopNav from "./TopNav";
 
-function Layout() {
-
-	const scrollToCategory = () => {
-		const element = document.getElementById("main-content")
-		if (element) {
-			element.scrollIntoView({ behavior: "smooth", block: "start" })
-		}
-	}
+export default function Layout() {
 	return (
 		<>
-			<GcdsHeader skipToHref="main-content"  padding="150px" height="auto" >
+			<GcdsHeader skipToHref="#main-content" padding="150px" height="auto">
 				<div slot="skip-to-nav">
-					<button onClick={scrollToCategory} className="skip-to-content-link">
+					<a className="skip-to-content-link" href="#main-content">
 						Skip to main content
-					</button>
-			</div>
-				<nav slot="menu" style={{backgroundColor:"#f1f2f3",}}>				
-					<GcdsContainer size="xl" centered color="black"    >
+					</a>
+				</div>
+				<nav slot="menu" style={{ backgroundColor: "#f1f2f3" }}>
+					<GcdsContainer size="xl" centered color="black">
 						<TopNav />
 					</GcdsContainer>
 				</nav>
@@ -47,9 +36,7 @@ function Layout() {
 				<Outlet />
 			</GcdsContainer>
 
-			<GcdsFooter contextualHeading="Contextual navigation"></GcdsFooter>
+			<GcdsFooter contextualHeading="Contextual navigation" />
 		</>
-	)
+	);
 }
-
-export default Layout

@@ -1,115 +1,99 @@
-import { useEffect, useState, useRef } from "react"
-import PropTypes from "prop-types"
-import { parse } from "papaparse" // You can use papaparse for CSV parsing
-import { RiArrowDropDownLine } from "react-icons/ri" // Import your icon component
-import "./FAQ.css" // Import your CSS file
-import { Link } from "react-router-dom"
+import { useEffect, useState, useRef } from "react";
+import PropTypes from "prop-types";
+import { parse } from "papaparse";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import "./FAQ.css";
+import { Link } from "react-router-dom";
 
 // AccordionItem component for displaying each FAQ item
 const AccordionItem = ({ question, answer, isOpen, onClick }) => {
 	// useRef to dynamically adjust content height
-	const contentHeight = useRef()
+	const contentHeight = useRef(null);
+
+	useEffect(() => {
+		if (isOpen && contentHeight.current) {
+			contentHeight.current.style.height = `${contentHeight.current.scrollHeight}px`;
+		} else if (contentHeight.current) {
+			contentHeight.current.style.height = "0px";
+		}
+	}, [isOpen]);
 
 	return (
 		<div className="wrapper">
-			{/* Button to toggle visibility of FAQ question */}
 			<button className={`question-container ${isOpen ? "active" : ""}`} onClick={onClick}>
-				<p className="question-content">{question}</p> {/* Display FAQ question */}
-				<RiArrowDropDownLine className={`arrow ${isOpen ? "active" : ""}`} /> {/* Icon for dropdown arrow */}
+				<p className="question-content">{question}</p>
+				<RiArrowDropDownLine className={`arrow ${isOpen ? "active" : ""}`} />
 			</button>
-
-			{/* Container for FAQ answer, adjusts height based on isOpen state */}
-			<div ref={contentHeight} className="answer-container" style={isOpen ? { height: contentHeight.current.scrollHeight + "px" } : { height: "0px" }}>
-				<p className="answer-content">{answer}</p> {/* Display FAQ answer */}
+			<div ref={contentHeight} className="answer-container">
+				<p className="answer-content">{answer}</p>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-// PropTypes for AccordionItem component props
 AccordionItem.propTypes = {
-	question: PropTypes.string.isRequired, // Required string prop for question
-	answer: PropTypes.string.isRequired, // Required string prop for answer
-	isOpen: PropTypes.bool.isRequired, // Required boolean prop to track open/close state
-	onClick: PropTypes.func.isRequired, // Required function prop to handle click events
-}
+	question: PropTypes.string.isRequired,
+	answer: PropTypes.string.isRequired,
+	isOpen: PropTypes.bool.isRequired,
+	onClick: PropTypes.func.isRequired,
+};
 
 export default function FAQ() {
-	const [jsonData, setJsonData] = useState(null) // State for parsed JSON data
-	const [activeIndices, setActiveIndices] = useState({}) // State to track open FAQ items
+	const [jsonData, setJsonData] = useState(null);
+	const [activeIndices, setActiveIndices] = useState({});
 
-	// Fetch CSV data and parse on component mount
 	useEffect(() => {
 		const fetchCSVData = async () => {
 			try {
-				// Example fetch CSV data (replace with your own method to fetch CSV)
-				const response = await fetch("assets/FAQ.csv")
-				const reader = response.body.getReader()
-				const result = await reader.read()
-				const decoder = new TextDecoder("utf-8")
-				const csvString = decoder.decode(result.value)
-
-				// Parse CSV string to array of objects
-				const parsedData = parse(csvString, { header: true }).data
-
-				// Filter out items with null or empty categories
-				const filteredData = parsedData.filter(item => item.Categories && item.Categories.trim() !== "")
-
-				// Group data by category
+				const response = await fetch("assets/FAQ.csv");
+				const reader = response.body.getReader();
+				const result = await reader.read();
+				const decoder = new TextDecoder("utf-8");
+				const csvString = decoder.decode(result.value);
+				const parsedData = parse(csvString, { header: true }).data;
+				const filteredData = parsedData.filter(item => item.Categories && item.Categories.trim() !== "");
 				const groupedData = filteredData.reduce((acc, item) => {
-					const category = item.Categories // Assuming "Categories" is the field name
+					const category = item.Categories;
 					if (!acc[category]) {
-						acc[category] = []
+						acc[category] = [];
 					}
-					acc[category].push(item)
-					return acc
-				}, {})
+					acc[category].push(item);
+					return acc;
+				}, {});
 
-				// Initialize active indices state
 				const initialActiveIndices = Object.keys(groupedData).reduce((acc, category, index) => {
-					acc[index] = null // Initialize each category with null (closed)
-					return acc
-				}, {})
+					acc[index] = null;
+					return acc;
+				}, {});
 
-				// Set grouped JSON data and initial active indices to state
-				setJsonData(groupedData)
-				setActiveIndices(initialActiveIndices)
+				setJsonData(groupedData);
+				setActiveIndices(initialActiveIndices);
 			} catch (error) {
-				console.error("Error fetching or parsing CSV file:", error)
+				console.error("Error fetching or parsing CSV file:", error);
 			}
-		}
+		};
 
-		fetchCSVData()
-	}, []) // Empty dependency array ensures useEffect runs only once on mount
+		fetchCSVData();
+	}, []);
 
-	// Function to handle click on FAQ item, toggles open/close state
 	const handleItemClick = (categoryIndex, itemIndex) => {
 		setActiveIndices(prevIndices => ({
 			...prevIndices,
 			[categoryIndex]: prevIndices[categoryIndex] === itemIndex ? null : itemIndex,
-		}))
-	}
-
-	// Function to scroll to specific FAQ category
-	const scrollToCategory = category => {
-		const element = document.getElementById(category)
-		if (element) {
-			element.scrollIntoView({ behavior: "smooth", block: "start" })
-		}
-	}
+		}));
+	};
 
 	return (
 		<div className="container">
-			<h1> Frequently Asked Questions</h1> {/* Title for FAQ section */}
+			<h1>Frequently Asked Questions</h1>
 			<div className="tableOfContents">
-				<ul style={{ listStyleType: "none" }} className="tableOfContentsList">
+				<ul className="tableOfContentsList">
 					{jsonData &&
 						Object.keys(jsonData).map((category, categoryIndex) => (
 							<Link
 								key={categoryIndex}
 								className="tableOfContentsListItem"
-								onClick={() => scrollToCategory(category)}
-								tabIndex="0"
+								to={`#${category}`}
 								style={{ textDecoration: "none", color: "#333333" }}
 							>
 								{category}
@@ -117,20 +101,18 @@ export default function FAQ() {
 						))}
 				</ul>
 			</div>
-			{/* Render FAQ categories and items */}
 			{jsonData &&
 				Object.keys(jsonData).map((category, categoryIndex) => (
 					<div key={categoryIndex} className="category-container">
-						<h2 id={category}>{category}</h2> {/* Display FAQ category title */}
+						<h2 id={category}>{category}</h2>
 						<ul style={{ listStyleType: "none" }}>
-							{/* Render each FAQ item as an AccordionItem */}
 							{jsonData[category].map((item, itemIndex) => (
 								<li key={itemIndex}>
 									<AccordionItem
-										question={item.Question} // Pass FAQ question to AccordionItem
-										answer={item.Answer} // Pass FAQ answer to AccordionItem
-										isOpen={activeIndices[categoryIndex] === itemIndex} // Track open/close state
-										onClick={() => handleItemClick(categoryIndex, itemIndex)} // Handle click event
+										question={item.Question}
+										answer={item.Answer}
+										isOpen={activeIndices[categoryIndex] === itemIndex}
+										onClick={() => handleItemClick(categoryIndex, itemIndex)}
 									/>
 								</li>
 							))}
@@ -138,5 +120,5 @@ export default function FAQ() {
 					</div>
 				))}
 		</div>
-	)
+	);
 }

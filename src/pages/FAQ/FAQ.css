@@ -1,5 +1,6 @@
 * {
 	box-sizing: border-box;
+	font-family: inherit;
 }
 
 .tableOfContents {
@@ -64,6 +65,7 @@
 .wrapper .arrow {
 	font-size: 2rem;
 	transition: 0.5s ease-in-out;
+	background-color: transparent;
 }
 
 .arrow.active {
