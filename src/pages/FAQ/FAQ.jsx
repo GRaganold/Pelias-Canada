@@ -103,8 +103,8 @@ export default function FAQ() {
 			</div>
 			{jsonData &&
 				Object.keys(jsonData).map((category, categoryIndex) => (
-					<div key={categoryIndex} className="category-container">
-						<h2 id={category}>{category}</h2>
+					<section key={categoryIndex} id={category} className="category-container">
+						<h2 >{category}</h2>
 						<ul style={{ listStyleType: "none" }}>
 							{jsonData[category].map((item, itemIndex) => (
 								<li key={itemIndex}>
@@ -117,7 +117,7 @@ export default function FAQ() {
 								</li>
 							))}
 						</ul>
-					</div>
+					</section>
 				))}
 		</div>
 	);
