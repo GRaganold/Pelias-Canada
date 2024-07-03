@@ -160,14 +160,7 @@ export default function TopNav() {
                 </NavLink>
               </li>
             </ul>
-          </li>
-
-          {/* Additional Menu Items */}
-          <li>
-            <NavLink to="/frequently-asked-questions" tabIndex="0" ref={lastMenuItemRef} onClick={handleCloseMenu}>
-              Frequently Asked Questions
-            </NavLink>
-          </li>
+          </li>        
         </ul>
       </div>
     </nav>
