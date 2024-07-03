@@ -2,6 +2,7 @@
 const GeocodingExplanation = () => {
   return (
     <div className="geocoding-explanation">
+      <h1>Geocoding-Explanation </h1>
       <section aria-labelledby="match-types">
         <h2 id="match-types">Understanding Match Types in Pelias</h2>
         <p>When Pelias returns geocoding results, it uses different types of matches to determine the accuracy of the location.</p>
