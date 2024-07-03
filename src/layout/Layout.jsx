@@ -1,10 +1,10 @@
 import { Outlet } from "react-router-dom"
-import { GcdsHeader, GcdsFooter, GcdsContainer } from "@cdssnc/gcds-components-react"
+import { GcdsHeader, GcdsContainer } from "@cdssnc/gcds-components-react"
 import "@cdssnc/gcds-components-react/gcds.css"
 import Breadcrumb from "../components/Breadcrumb"
 import "./Layout.css"
-
 import TopNav from "./TopNav"
+import Footer from "./Footer"
 
 export default function Layout() {
 	return (
@@ -36,10 +36,7 @@ export default function Layout() {
 				<Outlet />
 			</GcdsContainer>
 
-			<GcdsFooter
-				contextualHeading="Pelias Geocoder "
-				contextualLinks='{ "Geocoding Results Explanation": "geocoding-explanation", "Frequently Asked Questions": "frequently-asked-questions" }'
-			/>
+			<Footer />
 		</>
 	)
 }
