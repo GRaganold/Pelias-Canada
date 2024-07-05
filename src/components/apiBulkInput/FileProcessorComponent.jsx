@@ -14,6 +14,7 @@ const FileProcessorComponent = ({ jsonData }) => {
 	const [returnedCount, setReturnedCount] = useState(0)
 	const [exportTitle, setExportTitle] = useState("")
 
+
 	const inputCount = jsonData.length
 
 	const replaceSpecialCharacters = str => {
@@ -84,6 +85,9 @@ const FileProcessorComponent = ({ jsonData }) => {
 		const fetchWithRetry = async (url, retries = MAX_RETRY, delay = 200) => {
 			try {
 				const response = await fetch(url)
+				if (url === `https://geocoder.alpha.phac.gc.ca/api/v1/search?text=`) {
+					throw new Error(`"empty row`)
+				}
 				if (!response.ok) {
 					if (retries > 0 && response.status >= 500 && response.status < 600) {
 						console.warn(`Retrying ${url}, ${retries} retries left`)
@@ -105,7 +109,7 @@ const FileProcessorComponent = ({ jsonData }) => {
 				const apiUrl = `https://geocoder.alpha.phac.gc.ca/api/v1/search?text=${encodeURIComponent(address)}`
 				const responseData = await fetchWithRetry(apiUrl)
 
-				if (responseData) {
+				if (responseData && responseData !== "") {
 					console.log(`Address uploading`)
 
 					setApiResponses(prevResponses => ({
@@ -191,7 +195,7 @@ const FileProcessorComponent = ({ jsonData }) => {
 			const matchType = feature.properties.match_type || ""
 			const accuracy = feature.properties.accuracy || ""
 			const source = feature.properties.source || ""
-			const timestamp = convertTimestamp(result.data.geocoding.timestamp) || "Unknown"
+			const timestamp = convertTimestamp(result.data.geocoding.timestamp) || ""
 			const longitude = feature.geometry.coordinates ? feature.geometry.coordinates[0] : ""
 			const latitude = feature.geometry.coordinates ? feature.geometry.coordinates[1] : ""
 			const unitNumber = processedData.find(row => row["Physical Address"] === inputAddress)?.["Unit Number"] || ""
@@ -224,7 +228,7 @@ const FileProcessorComponent = ({ jsonData }) => {
 				const matchType = properties.match_type || ""
 				const accuracy = properties.accuracy || ""
 				const source = properties.source || ""
-				const timestamp = convertTimestamp(result.data.geocoding.timestamp) || "Unknown" // Use optional chaining to handle undefined geocoding
+				const timestamp = convertTimestamp(result.data.geocoding.timestamp) || "" // Use optional chaining to handle undefined geocoding
 				const longitude = feature.geometry.coordinates ? feature.geometry.coordinates[0] : ""
 				const latitude = feature.geometry.coordinates ? feature.geometry.coordinates[1] : ""
 				const unitNumber = processedData.find(row => row["Physical Address"] === inputAddress)?.["Unit Number"] || ""
@@ -252,13 +256,14 @@ const FileProcessorComponent = ({ jsonData }) => {
 		const result = apiResponses[address]
 		const feature = result?.features?.[0] ?? {}
 		const properties = feature?.properties ?? {}
-		const geometry = feature?.geometry.timestamp ?? {}
+		const geometry = feature?.geometry ?? {}
 		const longitude = geometry.coordinates ? geometry.coordinates[0] : "N/A"
 		const latitude = geometry.coordinates ? geometry.coordinates[1] : "N/A"
 		const confidence = properties.confidence !== undefined ? (properties.confidence * 100).toFixed(2) : "N/A"
 
 		return `${longitude},${latitude},${confidence}`
 	})
+
 	const convertTimestamp = epoch => {
 		const date = new Date(epoch)
 		const dateString = date.toLocaleDateString("en-CA") // 'en-CA' gives us the YYYY/MM/DD format
@@ -333,13 +338,14 @@ const FileProcessorComponent = ({ jsonData }) => {
 					</div>
 				</>
 			)}
-			{!isProcessing && (
+			{!isProcessing && !Error(
 				<div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
 					<GcdsDetails detailsTitle="View the Map">
 						<MapComponentOL mapContentJSON={mapContentJSON} />
 					</GcdsDetails>
 				</div>
 			)}
+			
 		</div>
 	)
 }
