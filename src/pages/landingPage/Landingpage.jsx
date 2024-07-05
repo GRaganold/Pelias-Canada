@@ -1,5 +1,4 @@
 /* eslint-disable react/no-unescaped-entities */
-// import TestAPIfetch from "../../assets/testApiFetch";
 import APIfetch from "../../components/apiFetch/APIFetch";
 
 export default function LandingPage() {
@@ -22,7 +21,7 @@ export default function LandingPage() {
         </p>
       </div>
       <section> 
-      <APIfetch /> 
+      <APIfetch />       
     </section>
     </>
   );

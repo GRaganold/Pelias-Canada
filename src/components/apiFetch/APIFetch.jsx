@@ -246,14 +246,50 @@ export default function APIfetch() {
 			{responseData && responseData.features && responseData.features[0] && (
 				<div>
 					<h2>
-						Information for{" "}
+						Information for
 						<i>
-							{unitNumber && <>{unitNumber} -</>} {responseData.geocoding.query.text}
-						</i>{" "}
+							{unitNumber && <>{unitNumber} -</>} {responseData.geocoding.query.text + " "}
+						</i>
 						returned:
 					</h2>
 					<div style={{ border: "1px solid black", padding: "4px" }}>
-						<h3>Accuracy information</h3>
+						
+						<div>
+							{responseData.features[0].properties.label === responseData.geocoding.query.text ? (
+								<h3>Accuracy information</h3>
+							) : (
+								<>
+									<div style={{ padding: "20px", backgroundColor: "#f44336", color: "white", marginBottom: "15px" }}>
+										<strong>The input address and return address do not match</strong>. Please check the following for more accurate results:
+										<ul>
+											<li>
+												is the
+												<strong>
+													<i> Address </i>
+												</strong>
+												correct
+											</li>
+											<li>
+												is the
+												<strong>
+													<i> City </i>
+												</strong>
+												correct
+											</li>
+											<li>
+												is the
+												<strong>
+													<i> Province </i>
+												</strong>
+												correct
+											</li>
+										</ul>
+									</div>
+									<h3>Accuracy information</h3>
+								</>
+							)}
+						</div>
+						<p> Address returned for : {responseData.features[0].properties.label}</p>
 						<div style={{ display: "flex", justifyContent: "space-evenly" }}>
 							<div>
 								<p>Call Confidence</p>
@@ -275,6 +311,7 @@ export default function APIfetch() {
 							<i>Information provided by Pelias Geocoder v{responseData.geocoding.version}</i>
 						</div>
 					</div>
+					<h4> </h4>
 					<div>
 						<p>
 							<strong>Date and Time (YYYY-MM-DD HH:MM:SS AM/PM) : </strong> {convertTimestamp(responseData.geocoding.timestamp)}
