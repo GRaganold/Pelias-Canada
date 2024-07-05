@@ -180,7 +180,7 @@ const FileProcessorComponent = ({ jsonData }) => {
 		for (const result of results) {
 			if (!result.data || !result.data.features || !result.data.features[0] || !result.data.features[0].properties) {
 				const unitNumber = processedData.find(row => row["Physical Address"] === result.address)?.["Unit Number"] || ""
-				worksheet.addRow([unitNumber ? `${unitNumber} ${result.address}` : result.address, "", "", "", "", "", "",""])
+				worksheet.addRow([unitNumber ? `${unitNumber} ${result.address}` : result.address, "", "", "", "", "", "", ""])
 				continue
 			}
 
@@ -191,11 +191,12 @@ const FileProcessorComponent = ({ jsonData }) => {
 			const matchType = feature.properties.match_type || ""
 			const accuracy = feature.properties.accuracy || ""
 			const source = feature.properties.source || ""
+			const timestamp = convertTimestamp(result.data.geocoding.timestamp) || "Unknown"
 			const longitude = feature.geometry.coordinates ? feature.geometry.coordinates[0] : ""
 			const latitude = feature.geometry.coordinates ? feature.geometry.coordinates[1] : ""
 			const unitNumber = processedData.find(row => row["Physical Address"] === inputAddress)?.["Unit Number"] || ""
 
-			worksheet.addRow([unitNumber ? `${unitNumber} ${inputAddress}` : inputAddress, `${confidence * 100}%`, matchType, accuracy, source, longitude, latitude])
+			worksheet.addRow([unitNumber ? `${unitNumber} ${inputAddress}` : inputAddress, `${confidence * 100}%`, matchType, accuracy, source, longitude, latitude, timestamp])
 		}
 
 		const buffer = await workbook.xlsx.writeBuffer()
@@ -213,20 +214,22 @@ const FileProcessorComponent = ({ jsonData }) => {
 			...results.map(result => {
 				if (!result.data || !result.data.features || !result.data.features[0] || !result.data.features[0].properties) {
 					const unitNumber = processedData.find(row => row["Physical Address"] === result.address)?.["Unit Number"] || ""
-					return `${unitNumber ? `${unitNumber} ${result.address}` : result.address},,,,,"","",""`
+					return `${unitNumber ? `${unitNumber} ${result.address}` : result.address},,,,,,,`
 				}
 
 				const inputAddress = result.address
 				const feature = result.data.features[0]
-				const confidence = feature.properties.confidence ? feature.properties.confidence.toFixed(2) : ""
-				const matchType = feature.properties.match_type || ""
-				const accuracy = feature.properties.accuracy || ""
-				const source = feature.properties.source || ""
+				const properties = feature.properties
+				const confidence = properties.confidence ? (properties.confidence * 100).toFixed(2) + " %" : ""
+				const matchType = properties.match_type || ""
+				const accuracy = properties.accuracy || ""
+				const source = properties.source || ""
+				const timestamp = convertTimestamp(result.data.geocoding.timestamp) || "Unknown" // Use optional chaining to handle undefined geocoding
 				const longitude = feature.geometry.coordinates ? feature.geometry.coordinates[0] : ""
 				const latitude = feature.geometry.coordinates ? feature.geometry.coordinates[1] : ""
 				const unitNumber = processedData.find(row => row["Physical Address"] === inputAddress)?.["Unit Number"] || ""
 
-				return `${unitNumber ? `${unitNumber} ${inputAddress}` : inputAddress},${confidence * 100} %,${matchType},${accuracy},${source},${longitude},${latitude}`
+				return `${unitNumber ? `${unitNumber} ${inputAddress}` : inputAddress},${confidence},${matchType},${accuracy},${source},${longitude},${latitude},${timestamp}`
 			}),
 		].join("\n")
 
@@ -249,14 +252,19 @@ const FileProcessorComponent = ({ jsonData }) => {
 		const result = apiResponses[address]
 		const feature = result?.features?.[0] ?? {}
 		const properties = feature?.properties ?? {}
-		const geometry = feature?.geometry ?? {}
-
+		const geometry = feature?.geometry.timestamp ?? {}
 		const longitude = geometry.coordinates ? geometry.coordinates[0] : "N/A"
 		const latitude = geometry.coordinates ? geometry.coordinates[1] : "N/A"
 		const confidence = properties.confidence !== undefined ? (properties.confidence * 100).toFixed(2) : "N/A"
 
 		return `${longitude},${latitude},${confidence}`
 	})
+	const convertTimestamp = epoch => {
+		const date = new Date(epoch)
+		const dateString = date.toLocaleDateString("en-CA") // 'en-CA' gives us the YYYY/MM/DD format
+		const timeString = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", second: "numeric", hour12: true })
+		return `${dateString} ${timeString}`
+	}
 
 	return (
 		<div>
@@ -301,10 +309,9 @@ const FileProcessorComponent = ({ jsonData }) => {
 							{Object.keys(apiResponses).map((address, index) => {
 								const result = apiResponses[address]
 								const feature = result?.features?.[0] ?? {}
+								const geocoding = result?.geocoding ?? {} // Adjusted to check if geocoding exists
 								const properties = feature?.properties ?? {}
 								const geometry = feature?.geometry ?? {}
-							
-
 								const unitNumber = processedData.find(row => row["Physical Address"] === address)?.["Unit Number"] || ""
 
 								return (
@@ -314,6 +321,8 @@ const FileProcessorComponent = ({ jsonData }) => {
 										<strong>Match Type:</strong> {properties.match_type || "Unknown"} <br />
 										<strong>Accuracy:</strong> {properties.accuracy || "Unknown"} <br />
 										<strong>Source:</strong> {properties.source || "Unknown"} <br />
+										<strong>Date and Time (YYYY-MM-DD HH:MM:SS AM/PM) ::</strong> {convertTimestamp(geocoding.timestamp) || "Unknown"} <br />{" "}
+										{/* Adjusted to safely access timestamp */}
 										<strong>Longitude:</strong> {geometry.coordinates ? geometry.coordinates[0] : "N/A"} <br />
 										<strong>Latitude:</strong> {geometry.coordinates ? geometry.coordinates[1] : "N/A"} <br />
 										<br />

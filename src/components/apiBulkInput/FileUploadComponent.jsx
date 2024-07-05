@@ -62,7 +62,7 @@ function FileUploadComponent({ onJsonDataLoaded }) {
 
 	return (
 		<section aria-labelledby="input">
-			<div id="BulkInput">
+			<div id="BulkInput" style={{paddingBottom:"50px"}}>
 				<form>
 					<label htmlFor="file">Upload Excel or CSV</label>
 					<br />

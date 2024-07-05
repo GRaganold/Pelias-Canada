@@ -113,9 +113,6 @@ export default function APIfetch() {
 			})
 	}
 
-	//
-	// Start Copy to Clipboard items
-	//
 	const handleCopyLatitude = () => {
 		if (!responseData || !responseData.features || !responseData.features[0]) {
 			toast.error("Latitude information is not available.")
@@ -167,10 +164,14 @@ export default function APIfetch() {
 			toast.success("Longitude and Latitude copied to clipboard!")
 		})
 	}
-	//
-	// End Copy to Clipboard items
-	//
-  
+
+	const convertTimestamp = epoch => {
+		const date = new Date(epoch)
+		const dateString = date.toLocaleDateString("en-CA") // 'en-CA' gives us the YYYY/MM/DD format
+		const timeString = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", second: "numeric", hour12: true })
+		return `${dateString} ${timeString}`
+	}
+
 	return (
 		<div style={{ padding: "40px" }}>
 			<form
@@ -274,7 +275,11 @@ export default function APIfetch() {
 							<i>Information provided by Pelias Geocoder v{responseData.geocoding.version}</i>
 						</div>
 					</div>
-
+					<div>
+						<p>
+							<strong>Date and Time (YYYY-MM-DD HH:MM:SS AM/PM) : </strong> {convertTimestamp(responseData.geocoding.timestamp)}
+						</p>
+					</div>
 					<p>
 						Longitude: {responseData.features[0].geometry.coordinates[0]}
 						<button style={{ marginLeft: "10px" }} onClick={handleCopyLongitude}>
